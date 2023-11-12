@@ -14,20 +14,10 @@ fn greet(name: &str) -> Greet {
     let encrypted_message = encrypt_string(&message);
     let decrypted_message = decrypt_string(&encrypted_message);
 
-    let decrypted_greet_msg = match decrypted_message {
-        Some(msg) => msg,
-        None => {
-            // Handle the case where decryption fails
-            eprintln!("Failed to decrypt message!");
-            // You can provide a default message or take other appropriate actions
-            String::from("Decryption failed")
-        }
-    };
-
     Greet {
         greet_msg: message,
         encrypted_greet_msg: encrypted_message,
-        decrypted_greet_msg,
+        decrypted_greet_msg: decrypted_message,
     }
 }
 

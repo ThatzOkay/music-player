@@ -1,3 +1,4 @@
+
 pub fn encrypt_string(input: &str) -> String {
     input.to_string()
 }

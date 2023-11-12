@@ -48,13 +48,13 @@ pub fn encrypt_string(input: &str) -> String {
     encrypted_data
 }
 
-pub fn decrypt_string(input: &str) -> Option<String> {
+pub fn decrypt_string(input: &str) -> String {
     use winapi::um::{wincrypt::DATA_BLOB, dpapi::{CRYPTPROTECT_LOCAL_MACHINE, CRYPTPROTECT_UI_FORBIDDEN, CryptUnprotectData}, winbase::LocalFree};
     extern crate winapi;
 
     let decoded_data = match general_purpose::STANDARD_NO_PAD.decode(input) {
         Ok(data) => data,
-        Err(_) => return None, // Failed to decode base64
+        Err(_) => return "".to_string(), // Failed to decode base64
     };
 
     let mut data_blob_in = DATA_BLOB {
@@ -80,7 +80,7 @@ pub fn decrypt_string(input: &str) -> Option<String> {
     }
 
     if data_blob_out.cbData == 0 {
-        return None;
+        return "".to_string()
     }
 
     let decrypted_data = unsafe {
@@ -91,5 +91,5 @@ pub fn decrypt_string(input: &str) -> Option<String> {
         LocalFree(data_blob_out.pbData as *mut _);
     }
 
-    Some(decrypted_data)
+    decrypted_data
 }
