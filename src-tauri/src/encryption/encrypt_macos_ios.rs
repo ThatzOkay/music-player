@@ -27,15 +27,11 @@ fn generate_or_retrieve_key() -> SecKey {
 
 pub fn encrypt_string(input: &str) -> String {
     let key = generate_or_retrieve_key();
-}
-
-pub fn decrypt_string(input: &str) -> Option<String> {
-    let key = generate_or_retrieve_key();
     let ciphertext = key.encrypt(security_framework::base::Padding::PKCS1, plaintext.as_bytes()).unwrap();
     general_purpose::STANDARD_NO_PAD.encode(&ciphertext)
 }
 
-fn decrypt_string(ciphertext: &str, key: &SecKey) -> String {
+pub fn decrypt_string(input: &str) -> Option<String> {
     let decoded_ciphertext = general_purpose::STANDARD_NO_PAD.decode(ciphertext).expect("Failed to base64 decode");
     let plaintext = key.decrypt(security_framework::base::Padding::PKCS1, &decoded_ciphertext).unwrap();
     String::from_utf8_lossy(&plaintext).into_owned()
