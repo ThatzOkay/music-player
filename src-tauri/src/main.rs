@@ -21,6 +21,14 @@ fn greet(name: &str) -> Greet {
     }
 }
 
+#[tauri::command]
+fn is_first_run() -> bool {
+    let db_connection = establish_connection();
+    let provider_count = db_connection;
+
+    true
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
