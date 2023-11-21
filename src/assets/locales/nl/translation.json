@@ -1,0 +1,11 @@
+{
+    "ManualAddProvider": "Handmatig toevoegen",
+    "AddedProviders" : "Mediaproviders toegevoegd",
+    "NoMediaProvidersAdded": "Nog geen mediaproviders toegevoegd, voeg er op zijn minst één toe",
+    "Done": "Klaar",
+    "Back": "Terug",
+    "Add": "Toevoegen",
+    "Username": "Gebruikersnaam",
+    "Password": "Wachtwoord",
+    "InvalidCredentials": "Ongeldige referenties"
+}

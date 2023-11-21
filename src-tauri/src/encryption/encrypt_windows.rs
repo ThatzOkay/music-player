@@ -1,5 +1,5 @@
 use std::ptr;
-
+use rand::prelude::*;
 use base64::{engine::general_purpose, Engine};
 
 pub fn encrypt_string(input: &str) -> String {
@@ -92,4 +92,17 @@ pub fn decrypt_string(input: &str) -> String {
     }
 
     decrypted_data
+}
+
+pub fn generate_random_salt(length: i32) -> String {
+    const CHARSET: &[u8] = b"abcdefghijklmnopqrstuvwxyz0123456789";
+    
+    let mut rng = rand::thread_rng();
+    let mut charset: Vec<char> = CHARSET.iter().map(|&b| b as char).collect();
+    
+    charset.shuffle(&mut rng);
+    
+    let salt: String = charset.into_iter().take(length.try_into().unwrap()).collect();
+
+    salt
 }

@@ -21,13 +21,16 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "nl.thatzokay.musicPlayer",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
         "icons/icon.icns",
         "icons/icon.ico"
+      ],
+      "resources": [
+        "./sqlite3.dll"
       ]
     },
     "security": {
@@ -37,9 +40,19 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "music-player",
+        "title": "Music Player",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "visible": false
+      },
+      {
+        "width": 400,
+        "height": 200,
+        "decorations": false,
+        "center": true,
+        "alwaysOnTop": true,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
       }
     ]
   }

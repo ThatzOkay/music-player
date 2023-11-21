@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
 import FirstRun from "../pages/firstRun";
 import FirstRunRouter from "../firstRunRouter";
+import Home from "../pages/home";
+import AddSubsonic from "../pages/addSubsonic";
 
 export const router = createBrowserRouter([
     {
@@ -10,10 +11,14 @@ export const router = createBrowserRouter([
     },
     {
       path: "/home",
-      element: <App />
+      element: <Home />
     },
     {
         path: "/firstrun",
         element: <FirstRun />
+    },
+    {
+      path: "/addSubsonic",
+      element: <AddSubsonic />
     }
   ])

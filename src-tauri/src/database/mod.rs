@@ -4,3 +4,4 @@ pub mod database {
 }
 
 pub mod database_manager;
+pub mod models;

@@ -1,0 +1,11 @@
+{
+    "ManualAddProvider": "Manually add",
+    "AddedProviders" : "Added mediaproviders",
+    "NoMediaProvidersAdded": "No mediaprovider added yet, atleast add one",
+    "Done": "Done",
+    "Back": "Back",
+    "Add": "Add",
+    "Username": "Username",
+    "Password": "Password",
+    "InvalidCredentials": "Invalid credentials"
+}
