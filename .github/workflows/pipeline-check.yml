@@ -22,6 +22,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: install sqlite3 lib (windows only)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          $url = 'https://www.sqlite.org/download.html'
+          $html = Invoke-WebRequest -Uri $url
+          $version = $html.ParsedHtml.getElementsByTagName('a') | Where-Object { $_.href -like '*sqlite-autoconf-*' } | Select-Object -First 1 -ExpandProperty innerText
+          $version -match 'sqlite-autoconf-(\d+\.\d+\.\d+)'
+          $SQLiteVersion = $matches[1]
+          $Year = (Get-Date).Year
+          $DLL_URL = "https://www.sqlite.org/$Year/sqlite-dll-win64-x64-$SQLiteVersion.zip"
+          $SOURCE_URL = "https://www.sqlite.org/$Year/sqlite-amalgamation-$SQLiteVersion.zip"
+          Invoke-WebRequest -Uri $SOURCE_URL -OutFile ".\sqlite-source.zip"
+          Invoke-WebRequest -Uri $DLL_URL -OutFile ".\sqlite-bin.zip"
+          Expand-Archive -Path ".\sqlite-source.zip" -DestinationPath ".\sqlite-lib"
+          Expand-Archive -Path ".\sqlite-bin.zip" -DestinationPath ".\sqlite-lib"
+          cd ".\sqlite-lib"
+          lib /DEF:sqlite3.def /OUT:sqlite3.lib /MACHINE:x64
+          $userProfile = $env:USERPROFILE
+          $sourceFilePath = ".\sqlite3.lib"
+          $destinationDirectory = "$userProfile\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib\rustlib\x86_64-pc-windows-msvc\lib"
+          Copy-Item -Path $sourceFilePath -Destination $destinationDirectory
+          cd ..
       - name: install frontend dependencies
         run: yarn install
       - uses: tauri-apps/tauri-action@v0
