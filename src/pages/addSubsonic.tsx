@@ -35,7 +35,10 @@ function AddSubsonic() {
         catch (exception){
             console.log(exception)
         }
-        //navigate("/firstrun")
+
+        if(addedProvider) {
+            navigate("/firstrun")
+        }
     }
 
     return (
