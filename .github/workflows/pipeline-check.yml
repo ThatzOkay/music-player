@@ -27,9 +27,9 @@ jobs:
         run: |
           $url = 'https://www.sqlite.org/download.html'
           $html = Invoke-WebRequest -Uri $url
-          $version = $html.ParsedHtml.getElementsByTagName('a') | Where-Object { $_.href -like '*sqlite-autoconf-*' } | Select-Object -First 1 -ExpandProperty innerText
-          $version -match 'sqlite-autoconf-(\d+\.\d+\.\d+)'
-          $SQLiteVersion = $matches[1]
+          $versionHref = ($html.Links | Where-Object { $_ -like '*sqlite-dll-win-*' } | Select-Object -First 1).outerHTML
+          $versionMatch = [regex]::Matches($versionHref, "-\d.+")[0].Value
+          $SQLiteVersion = [regex]::Matches($versionMatch, "\d+")[0].Value
           $Year = (Get-Date).Year
           $DLL_URL = "https://www.sqlite.org/$Year/sqlite-dll-win64-x64-$SQLiteVersion.zip"
           $SOURCE_URL = "https://www.sqlite.org/$Year/sqlite-amalgamation-$SQLiteVersion.zip"
