@@ -16,7 +16,7 @@ impl SubsonicClient<'_> {
         SubsonicClient {host, username, password}
     }
 
-    pub async fn execute<T>(&self, endpoint: &str, method: reqwest::Method, data: Option<&serde_json::Value>) -> Result<T, String> where T: DeserializeOwned {
+    pub async fn execute<T>(&self, endpoint: &str, method: reqwest::Method, data: Option<&str>) -> Result<T, String> where T: DeserializeOwned {
         let client = reqwest::Client::new();
 
         let mut  url = Url::parse(&format!("{}/rest/{}", self.host, endpoint))
@@ -42,7 +42,12 @@ impl SubsonicClient<'_> {
 
         let request_builder = match method {
             reqwest::Method::GET => client.get(url),
-            reqwest::Method::POST => client.post(url),
+            reqwest::Method::POST => {
+                match data {
+                    Some(data) =>client.post(url).header("Content-Type", "application/json").body(data.to_owned()),
+                    None => client.post(url),
+                }
+            },
             _ => return Err(format!("Invalid HTTP method: {}", method).as_str().into())
         };
 
