@@ -26,7 +26,8 @@ jobs:
         if: matrix.platform == 'windows-latest'
         run: |
           $sourceFilePath = ".\src-tauri\lib\sqlite3.lib"
-          $destinationDirectory = "$userProfile\.rustup\toolchains\stable-x86_64-pc-windows-msvc\lib\rustlib\x86_64-pc-windows-msvc\lib"
+          $userProfile = [System.Environment]::GetFolderPath("UserProfile")
+          $destinationDirectory = Join-Path $userProfile ".rustup\toolchains\stable-x86_64-pc-windows-msvc\lib\rustlib\x86_64-pc-windows-msvc\lib"
           Copy-Item -Path $sourceFilePath -Destination $destinationDirectory
           cd ..
       - name: install frontend dependencies
