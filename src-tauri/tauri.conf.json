@@ -30,7 +30,7 @@
         "icons/icon.ico"
       ],
       "resources": [
-        "./sqlite3.dll"
+        "./lib/sqlite3.dll"
       ]
     },
     "security": {
