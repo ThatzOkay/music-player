@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::managers::clients::subsonic_client::SubsonicClient;
 
-use super::clients::responses::subsonic_ping_response::SubsonicPingResponse;
+use super::clients::responses::{subsonic_ping_response::SubsonicPingResponse, subsonic_search3_response::SubsonicSearch3Response};
 
 
 pub struct SubsonicManager<'a> {
@@ -18,7 +20,7 @@ impl<'a> SubsonicManager<'a> {
     }
 
     pub async fn ping(&self) -> bool {
-        let response = self.subsonic_client.get::<SubsonicPingResponse>("ping").await;
+        let response = self.subsonic_client.get::<SubsonicPingResponse>("ping", None).await;
         
         match response {
             Ok(response) => {
@@ -33,6 +35,15 @@ impl<'a> SubsonicManager<'a> {
                 false
             },
         }
+    }
+
+    pub async fn search3(&self, query: &str) -> String {
+        let mut additional_query_parans = HashMap::new();
+        additional_query_parans.insert("query", query);
+        
+        let response = self.subsonic_client.get::<SubsonicSearch3Response>("search3", Some(additional_query_parans)).await;
+
+        "".to_string()
     }
 
 }

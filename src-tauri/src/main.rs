@@ -79,6 +79,7 @@ fn is_first_run() -> bool {
     return false;
 }
 
+
 #[tauri::command]
 async fn check_credentials(provider: ConnectionType, host: String, username: String, password: String) -> Result<bool, ()> {
   match provider {ConnectionType::Subsonic=> {
