@@ -20,7 +20,7 @@
     "i18next": "^23.7.6",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
-    "navidrome-music-player": "file:../../js/react-music-player",
+    "navidrome-music-player": "git+https://github.com/ThatzOkay/react-music-player.git",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^9.0.10",
