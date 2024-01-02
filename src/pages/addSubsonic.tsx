@@ -1,11 +1,11 @@
-import { Box, Button, Card, Grid, TextField, Typography } from "@mui/material";
+import { Button, Card, Flex, FormControl, FormErrorMessage, FormLabel, Input, Text, VStack } from "@chakra-ui/react";
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
 import { history } from "../helpers/history";
 import { TbSubmarine } from "react-icons/tb";
-import React from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { toast } from 'react-toastify';
+import { Field, Formik } from "formik";
 
 function AddSubsonic() {
     const navigate = useNavigate();
@@ -14,68 +14,126 @@ function AddSubsonic() {
         navigate(history.location?.pathname ?? "/firstrun");
     }
 
-    async function handleAddSubsonicSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        
-        const formData = new FormData(e.currentTarget);
-        const host = formData.get("host")
-        const username = formData.get("username")
-        const password = formData.get("password")
+    async function handleAddSubsonicSubmit(values: {
+        host: string;
+        username: string;
+        password: string;
+    }) {
+        const host = values.host;
+        const username = values.username;
+        const password = values.password;
 
         var correctCreds = await invoke("check_credentials", { provider: "Subsonic", host, username, password }) as unknown as boolean
 
-        if(!correctCreds) {
+        if (!correctCreds) {
             toast.error(t('InvalidCredentials'));
             return;
         }
 
         try {
-        var addedProvider = await invoke("add_provider", { provider: "Subsonic", host, username, password }) as any
+            var addedProvider = await invoke("add_provider", { provider: "Subsonic", host, username, password }) as any
         }
-        catch (exception){
+        catch (exception) {
             console.log(exception)
         }
 
-        if(addedProvider) {
+        if (addedProvider) {
             navigate("/firstrun")
         }
     }
 
     return (
-        <Grid container direction="column" style={{ height: "100vh" }}>
-            <Grid item sx={{ flexGrow: 1 }}>
+        <>
+            <Flex align="center" justify="center" h="100vh">
                 <Card sx={{ height: 'auto%', width: '75%', margin: 'auto' }}>
-                    <Typography sx={{ textAlign: "center", fontSize: 50, marginTop: 5 }}><TbSubmarine /> Subsonic</Typography>
+                    <Text sx={{ textAlign: "center", fontSize: 50, marginTop: 5 }}><TbSubmarine /> Subsonic</Text>
+                    <Formik
+                        initialValues={{
+                            host: "",
+                            username: "",
+                            password: ""
+                        }}
+                        onSubmit={handleAddSubsonicSubmit}
+                    >
+                        {({ handleSubmit, errors, touched }) => (
+                            <form onSubmit={handleSubmit}>
+                                <VStack spacing={4} align="flex-start">
+                                    <FormControl isInvalid={!!errors.host && touched.host}>
+                                        <FormLabel htmlFor="host">{t('Host')}</FormLabel>
+                                        <Field
+                                            as={Input}
+                                            color="black"
+                                            id="host"
+                                            name="host"
+                                            type="text"
+                                            variant="filled"
+                                            validate={(value: string) => {
+                                                let error;
 
-                    <Box component="form" onSubmit={handleAddSubsonicSubmit} noValidate
-                        sx={{
-                            marginTop: 8,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center'
-                        }}>
-                        <TextField margin="normal" required fullWidth id="host" label="host" name="host" autoComplete="host" autoFocus />
-                        <TextField margin="normal" required fullWidth id="username" label={t('Username')} name="username" autoComplete="username" />
-                        <TextField margin="normal" required fullWidth id="password" label={t('Password')} name="password" autoComplete="password" type="password" />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 5}}
-                        >
-                            {t('Add')}
-                        </Button>
-                    </Box>
+                                                if (value.length === 0) {
+                                                    error = t("FieldRequired") //TODO translate
+                                                }
+
+                                                return error;
+                                            }} />
+                                        <FormErrorMessage>{errors.host}</FormErrorMessage>
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel htmlFor="username">{t('Username')}</FormLabel>
+                                        <Field
+                                            as={Input}
+                                            color="black"
+                                            id="username"
+                                            name="username"
+                                            type="text"
+                                            variant="filled"
+                                            validate={(value: string) => {
+                                                let error;
+
+                                                if (value.length === 0) {
+                                                    error = t("FieldRequired") //TODO translate
+                                                }
+
+                                                return error;
+                                            }} />
+                                        <FormErrorMessage>{errors.username}</FormErrorMessage>
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel htmlFor="password">{t('Password')}</FormLabel>
+                                        <Field
+                                            as={Input}
+                                            color="black"
+                                            id="password"
+                                            name="password"
+                                            type="password"
+                                            variant="filled"
+                                            validate={(value: string) => {
+                                                let error;
+
+                                                if (value.length === 0) {
+                                                    error = t("FieldRequired") //TODO translate
+                                                }
+
+                                                return error;
+                                            }} />
+                                        <FormErrorMessage>{errors.password}</FormErrorMessage>
+                                    </FormControl>
+                                    <Button type="submit" colorScheme="blue" width="full">
+                                        {t('Add')}
+                                    </Button>
+                                </VStack>
+                            </form>
+                        )}
+                    </Formik>
+
                 </Card>
-            </Grid>
-            <Grid item sx={{ position: "fixed", bottom: 20, left: 20 }}>
-                <Button variant="contained" onClick={onBackClick}>
-                    <Typography>{t('Back')}</Typography>
+            </Flex>
+            <Flex position="fixed" bottom="10" left="10">
+                <Button colorScheme="blue" onClick={onBackClick}>
+                    {t('Back')}
                 </Button>
-            </Grid>
-        </Grid>
+            </Flex>
+        </>
     );
 }
 

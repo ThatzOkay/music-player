@@ -8,6 +8,9 @@
         "type": "lldb",
         "request": "launch",
         "name": "Tauri Development Debug",
+        "env": {
+          "RUST_BACKTTRACE": "1"
+        },
         "cargo": {
           "args": [
             "build",

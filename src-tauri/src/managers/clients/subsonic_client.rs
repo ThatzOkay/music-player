@@ -16,7 +16,7 @@ impl SubsonicClient<'_> {
         SubsonicClient {host, username, password}
     }
 
-    pub async fn execute<T>(&self, endpoint: &str, method: reqwest::Method, data: Option<&str>) -> Result<T, String> where T: DeserializeOwned {
+    pub async fn execute<T>(&self, endpoint: &str, method: reqwest::Method, data: Option<&str>, additional_query_params: Option<HashMap<&str, &str>>) -> Result<T, String> where T: DeserializeOwned {
         let client = reqwest::Client::new();
 
         let mut  url = Url::parse(&format!("{}/rest/{}", self.host, endpoint))
@@ -38,6 +38,12 @@ impl SubsonicClient<'_> {
         default_query_params.insert("f", "json");
         default_query_params.insert("v", "1.16.1");
         
+        let to_add = match additional_query_params {
+            Some(additional_query_params) => additional_query_params,
+            None => HashMap::new(),
+        };
+
+        url.query_pairs_mut().extend_pairs(to_add);
         url.query_pairs_mut().extend_pairs(default_query_params);
 
         let request_builder = match method {
@@ -70,7 +76,7 @@ impl SubsonicClient<'_> {
         }
     }
 
-    pub async fn get<T>(&self, endpoint: &str) -> Result<T, String> where T: DeserializeOwned {
-        self.execute::<T>(endpoint, reqwest::Method::GET, None).await
+    pub async fn get<T>(&self, endpoint: &str, additional_query_params: Option<HashMap<&str, &str>>) -> Result<T, String> where T: DeserializeOwned {
+        self.execute::<T>(endpoint, reqwest::Method::GET, None, additional_query_params).await
     }
 }

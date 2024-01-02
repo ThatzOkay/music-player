@@ -7,5 +7,6 @@
     "Add": "Add",
     "Username": "Username",
     "Password": "Password",
-    "InvalidCredentials": "Invalid credentials"
+    "InvalidCredentials": "Invalid credentials",
+    "FieldRequired": "Field is required"
 }
