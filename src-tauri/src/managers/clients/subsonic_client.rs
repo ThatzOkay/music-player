@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use reqwest::Url;
 use serde::de::DeserializeOwned;
-use tauri::api::ipc::SerializeOptions;
 
 use crate::encryption::platform_encryption::generate_random_salt;
 

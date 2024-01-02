@@ -5,16 +5,14 @@ import "./styles.css";
 import './i18n';
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routing/browserRouter";
-import { ThemeProvider, createTheme } from "@mui/material";
 import { ToastContainer } from "react-toastify";
-
-const defaultTheme = createTheme();
+import { ChakraProvider } from '@chakra-ui/react'
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ThemeProvider theme={defaultTheme}>
-    <RouterProvider router={router} />
-    <ToastContainer />
-    </ThemeProvider>
+    <ChakraProvider>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </ChakraProvider>
   </React.StrictMode>,
 );

@@ -14,10 +14,18 @@ impl ConnectionType {
         }
     }
 
-    pub fn get_type(&self) -> i32 {
+    pub fn as_int(&self) -> i32 {
         match self {
             ConnectionType::Local => 0,
             ConnectionType::Subsonic => 1,
+        }
+    }
+
+    pub fn as_connection_type(int: i32) -> Option<ConnectionType> {
+        match int {
+            0 => Some(ConnectionType::Local),
+            1 => Some(ConnectionType::Subsonic),
+            _ => None
         }
     }
 }
