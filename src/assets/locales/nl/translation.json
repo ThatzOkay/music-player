@@ -7,5 +7,6 @@
     "Add": "Toevoegen",
     "Username": "Gebruikersnaam",
     "Password": "Wachtwoord",
-    "InvalidCredentials": "Ongeldige referenties"
+    "InvalidCredentials": "Ongeldige referenties",
+    "FieldRequired": "Veld is vereist"
 }

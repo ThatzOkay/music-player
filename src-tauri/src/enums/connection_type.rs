@@ -20,4 +20,12 @@ impl ConnectionType {
             ConnectionType::Subsonic => 1,
         }
     }
+
+    pub fn from_u32(value: i32) -> ConnectionType {
+        match value {
+            0 => ConnectionType::Local,
+            1 => ConnectionType::Subsonic,
+            _ => ConnectionType::Local,
+        }
+    }
 }

@@ -1,10 +1,13 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import vue from "@vitejs/plugin-vue";
 import { viteStaticCopy } from 'vite-plugin-static-copy'
+
+// @ts-expect-error process is a nodejs global
+const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react(), viteStaticCopy({
+  plugins: [vue(), viteStaticCopy({
     targets: [
       { src: 'splashscreen.html', dest: ''}
     ]
@@ -18,8 +21,17 @@ export default defineConfig(async () => ({
   server: {
     port: 1420,
     strictPort: true,
+    host: host || false,
+    hmr: host
+      ? {
+          protocol: "ws",
+          host,
+          port: 1421,
+        }
+      : undefined,
+    watch: {
+      // 3. tell vite to ignore watching `src-tauri`
+      ignored: ["**/src-tauri/**"],
+    },
   },
-  // 3. to make use of `TAURI_DEBUG` and other env variables
-  // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ["VITE_", "TAURI_"],
 }));
