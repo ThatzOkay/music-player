@@ -21,7 +21,7 @@ onMounted(() => {
             }
         }
 
-        router.push('/home');
+        router.push('/album/recentlyAdded');
     });
 })
 </script>

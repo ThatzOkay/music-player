@@ -12,7 +12,7 @@ use database::{
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use directories::ProjectDirs;
 use encryption::platform_encryption::encrypt_string;
-use enums::connection_type::ConnectionType;
+use enums::{connection_type::ConnectionType, filter_type::FilterType};
 use managers::subsonic_manager::SubsonicManager;
 use tauri::Manager;
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
@@ -143,6 +143,50 @@ async fn get_providers() -> Result<Vec<Provider>, String> {
 }
 
 #[tauri::command]
+async fn get_recently_added_albums_for_provider(provider_id: i32) -> Result<Vec<Album>, String> {
+    if let Some(proj_dirs) = ProjectDirs::from("nl", "thatzokay", "music-player") {
+        let conn_string = proj_dirs
+            .config_dir()
+            .join("database.db")
+            .display()
+            .to_string();
+        let mut database_manager = database_manager::DatabaseManager::new(conn_string);
+
+        let provider = database_manager.get_provider_by_id(provider_id);
+
+        if provider.is_none() {
+            return Err("Provider not found".to_string());
+        }
+
+        let provider = provider.unwrap();
+        let provider_clone = provider.clone();
+
+        match ConnectionType::from_u32(provider.connection_type) {
+            ConnectionType::Subsonic => {
+                let subsonic_manager = SubsonicManager::new_form_provider(
+                    provider_clone
+                );
+
+                let albums = subsonic_manager.get_albums(Some(FilterType::Newest)).await;
+
+                if albums.is_err() {
+                    return Err("Error getting albums".to_string());
+                }
+
+                let albums = albums.unwrap();
+                
+                return Ok(albums);
+            }
+            ConnectionType::Local => {
+                return Ok(Vec::new());
+            }
+        }
+    }
+
+    Err("".to_string())
+}
+
+#[tauri::command]
 async fn get_albums_for_provider(provider_id: i32) -> Result<Vec<Album>, String> {
     if let Some(proj_dirs) = ProjectDirs::from("nl", "thatzokay", "music-player") {
         let conn_string = proj_dirs
@@ -167,7 +211,7 @@ async fn get_albums_for_provider(provider_id: i32) -> Result<Vec<Album>, String>
                     provider_clone
                 );
 
-                let albums = subsonic_manager.get_albums().await;
+                let albums = subsonic_manager.get_albums(None).await;
 
                 if albums.is_err() {
                     return Err("Error getting albums".to_string());
@@ -207,7 +251,8 @@ pub fn run() {
             check_credentials,
             add_provider,
             get_providers,
-            get_albums_for_provider
+            get_albums_for_provider,
+            get_recently_added_albums_for_provider
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

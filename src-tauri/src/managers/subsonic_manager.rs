@@ -6,6 +6,7 @@ use crate::clients::subsonic_client::SubsonicClient;
 use crate::clients::response::subsonic_ping_response::SubsonicPingResponse;
 use crate::database::models::Provider;
 use crate::encryption::platform_encryption::decrypt_string;
+use crate::enums::filter_type::{self, FilterType};
 
 
 pub struct SubsonicManager<'a> {
@@ -49,9 +50,14 @@ impl<'a> SubsonicManager<'a> {
         }
     }
 
-    pub async fn get_albums(&self) -> Result<Vec<Album>, String> {
+    pub async fn get_albums(&self, filter_type: Option<FilterType>) -> Result<Vec<Album>, String> {
         let mut extra_params = HashMap::new();
-        extra_params.insert("type".to_string(), "random".to_string());
+
+        if let Some(filter_type) = filter_type {
+            extra_params.insert("type".to_string(), filter_type.get_type().to_string());
+        } else {
+            extra_params.insert("type".to_string(), "random".to_string());
+        }
 
         let response = self.subsonic_client.get::<SubsonicAlbumResponse>("getAlbumList2", Some(extra_params)).await;
 
