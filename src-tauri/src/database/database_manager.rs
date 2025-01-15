@@ -1,8 +1,9 @@
 use diesel::{prelude::*, result::Error};
 use reqwest::Url;
+
 use crate::enums::connection_type::ConnectionType;
 
-use super::models::{models::{NewProvider, Provider}, schema::providers};
+use super::{models::{NewProvider, Provider}, schema::providers};
 
 pub struct DatabaseManager {
     conn_string: String,
@@ -29,13 +30,37 @@ impl DatabaseManager {
     }
 
     pub fn get_provider_count(&mut self) -> i32 {
-        use crate::database::models::schema::providers::dsl::*;
+        use crate::database::schema::providers::dsl::*;
         let count_result = providers.count().get_result::<i64>(&mut self.connection);
         match count_result {
             Ok(count) => count as i32,
             Err(err) => {
                 eprintln!("Error fetching provider count: {}", err);
                 0 // Return 0 when an error occurs
+            }
+        }
+    }
+
+    pub fn get_provider_by_id(&mut self, provider_id: i32) -> Option<Provider> {
+        use crate::database::schema::providers::dsl::*;
+        let provider = providers.find(provider_id).first::<Provider>(&mut self.connection);
+        match provider {
+            Ok(provider) => Some(provider),
+            Err(err) => {
+                eprintln!("Error fetching provider: {}", err);
+                None
+            }
+        }
+    }
+
+    pub fn get_providers(&mut self) -> Vec<Provider> {
+        use crate::database::schema::providers::dsl::*;
+        let results = providers.load::<Provider>(&mut self.connection);
+        match results {
+            Ok(provs) => provs,
+            Err(err) => {
+                eprintln!("Error fetching providers: {}", err);
+                Vec::new()
             }
         }
     }
@@ -71,7 +96,7 @@ impl DatabaseManager {
         let conn_name = connection_type.get_name();
         let conn_type = connection_type.get_type();
 
-        let new_provider = NewProvider {connection_type: &(conn_type.clone() as i32), name: conn_name, api: conn_name, ip: ip.as_str(), port: &port, username, password };
+        let new_provider = NewProvider {connection_type: &(conn_type.clone() as i32), name: conn_name, api: conn_name, ip: ip.as_str(), port: &port, username, password, schema: url.scheme() };
         
         let result = diesel::insert_into(providers::table)
             .values(&new_provider)
@@ -91,7 +116,7 @@ impl DatabaseManager {
     }
 
     pub fn get_last_added_provider(&mut self) -> Result<Provider, Error> {
-        use super::models::schema::providers::dsl::*;
+        use super::schema::providers::dsl::*;
         let provider = providers.order(id.desc()).first::<Provider>(&mut self.connection);
         provider
     }
